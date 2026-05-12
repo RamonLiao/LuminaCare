@@ -75,6 +75,17 @@ export default function RecordsPage() {
                   <span className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</span>
                 </div>
                 <p className="mt-2 text-sm">{r.preview}</p>
+                {r.txSig && (
+                  <a
+                    href={`https://solscan.io/tx/${r.txSig}?cluster=devnet`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2 inline-block text-xs text-emerald-600 hover:underline"
+                  >
+                    ✓ 已存證 · 查看鏈上紀錄 ↗
+                  </a>
+                )}
               </Card>
             </Link>
           </li>

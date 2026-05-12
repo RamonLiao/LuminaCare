@@ -1,5 +1,5 @@
 // v2: network-first. Old v1 cached HTML which referenced now-404'd /_next/ chunks.
-const CACHE = "ph-v2";
+const CACHE = "ph-v3";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -32,7 +32,7 @@ self.addEventListener("fetch", (e) => {
       } catch {
         const hit = await caches.match(e.request);
         if (hit) return hit;
-        throw new Error("offline");
+        return new Response("offline", { status: 503, statusText: "offline" });
       }
     })(),
   );
