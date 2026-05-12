@@ -14,9 +14,21 @@ export default function MePage() {
       <h1 className="text-2xl font-bold">我</h1>
       <Card className="space-y-2 p-4">
         <p className="text-sm">{user?.email?.address ?? user?.google?.email ?? "未知帳號"}</p>
-        <p className="text-xs text-slate-400">
-          存證地址 {w ? `${w.address.slice(0, 8)}…${w.address.slice(-4)}` : "—"}
+        <p className="text-xs text-slate-400 break-all">
+          存證地址 <span data-testid="full-address">{w?.address ?? "—"}</span>
         </p>
+        {w && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              navigator.clipboard.writeText(w.address);
+              alert("已複製");
+            }}
+          >
+            複製地址
+          </Button>
+        )}
       </Card>
       <Button variant="outline" className="w-full" onClick={() => alert("PDF 匯出即將推出")}>
         匯出 PDF
