@@ -14,6 +14,7 @@ import { sha256 } from "@/lib/crypto/hash";
 import { uploadCipher } from "@/lib/blob/upload";
 import { getProgram, grantPda, PROGRAM_ID } from "@/lib/anchor/client";
 import { adaptPrivyWallet } from "@/lib/anchor/wallet-adapter";
+import { assertSufficientBalance } from "@/lib/solana/balance";
 import { encodePayload } from "@/lib/qr/payload";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,8 +44,10 @@ function SharePageInner() {
     if (!privyWallet) { setMsg("錢包尚未準備"); return; }
     if (picked.size === 0) { setMsg("請至少選一筆"); return; }
     if (!granteeLabel) { setMsg("請填醫師標籤"); return; }
-    setBusy(true); setMsg("打包中…");
+    setBusy(true); setMsg("檢查餘額…");
     try {
+      await assertSufficientBalance(privyWallet.address);
+      setMsg("打包中…");
       const selected = records.filter((r) => picked.has(r.recordId));
       const bundleObj = {
         records: selected.map((r) => ({

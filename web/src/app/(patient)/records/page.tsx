@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useWallets } from "@privy-io/react-auth/solana";
 import { getProgram } from "@/lib/anchor/client";
 import { adaptPrivyWallet } from "@/lib/anchor/wallet-adapter";
+import { assertSufficientBalance } from "@/lib/solana/balance";
 import { PublicKey } from "@solana/web3.js";
 import type { ConnectedStandardSolanaWallet } from "@privy-io/js-sdk-core";
 
@@ -22,6 +23,7 @@ function RevokeButton({ grantId, pda }: { grantId: string; pda: string }) {
     if (!confirm("確定撤銷？醫師將立即無法查看。")) return;
     setBusy(true);
     try {
+      await assertSufficientBalance(privyWallet.address);
       const wallet = adaptPrivyWallet(privyWallet);
       const program = getProgram(wallet);
       const grantIdBytes = new Uint8Array(grantId.match(/.{2}/g)!.map((h) => parseInt(h, 16)));

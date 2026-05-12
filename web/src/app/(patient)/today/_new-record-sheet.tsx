@@ -21,6 +21,7 @@ import { sha256 } from "@/lib/crypto/hash";
 import { uploadCipher } from "@/lib/blob/upload";
 import { getProgram, recordPda } from "@/lib/anchor/client";
 import { adaptPrivyWallet } from "@/lib/anchor/wallet-adapter";
+import { assertSufficientBalance } from "@/lib/solana/balance";
 import { addRecord, nextVersion } from "@/lib/storage/records";
 import type { ConnectedStandardSolanaWallet } from "@privy-io/js-sdk-core";
 
@@ -49,8 +50,10 @@ export function NewRecordSheet({
       return;
     }
     setBusy(true);
-    setMsg("加密中…");
+    setMsg("檢查餘額…");
     try {
+      await assertSufficientBalance(privyWallet.address);
+      setMsg("加密中…");
       const raw = file
         ? new Uint8Array(await file.arrayBuffer())
         : new TextEncoder().encode(text);
