@@ -1,0 +1,36 @@
+# Claude / agent infra (per user preference: no CLAUDE-related files in git)
+.claude/
+.agents/
+.windsurf/
+skills-lock.json
+tasks/progress.md
+tasks/lessons.md
+
+# OS
+.DS_Store
+*.swp
+
+# Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+**/keypair*.json
+!**/target/idl/*.json
+
+# Anchor / Rust
+chain/**/target/
+chain/**/.anchor/
+chain/**/test-ledger/
+**/*.rs.bk
+
+# Node / Next.js (for upcoming web/)
+node_modules/
+.next/
+out/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
