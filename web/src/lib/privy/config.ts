@@ -27,6 +27,13 @@ export const privyConfig: PrivyClientConfig = {
         rpcSubscriptions: createSolanaRpcSubscriptions(RPC_WS),
         blockExplorerUrl: "https://solscan.io/?cluster=devnet",
       },
+      // mainnet placeholder so Privy SDK doesn't crash if it queries the chain
+      // (we never actually transact on mainnet — disable it in Privy dashboard too)
+      "solana:mainnet": {
+        rpc: createSolanaRpc("https://api.mainnet-beta.solana.com"),
+        rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.mainnet-beta.solana.com"),
+        blockExplorerUrl: "https://solscan.io/",
+      },
     },
   },
 };
