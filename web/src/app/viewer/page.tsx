@@ -38,7 +38,7 @@ function ScannerInner() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center gap-4 p-4">
-      <h1 className="text-xl font-bold">掃描病歷 QR</h1>
+      <h1 className="text-xl font-bold">Scan patient QR</h1>
       <div ref={ref} className="w-full max-w-sm" />
       {err && <p className="text-rose-600">{err}</p>}
     </main>

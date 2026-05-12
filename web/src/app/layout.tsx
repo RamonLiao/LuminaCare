@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "病歷隨身",
-  description: "醫療級存證．分享一掃即看",
+  title: "LuminaCare",
+  description: "Medical-grade attestation. Scan once to view.",
   manifest: "/manifest.json",
 };
 

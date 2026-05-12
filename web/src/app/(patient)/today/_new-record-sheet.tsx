@@ -42,18 +42,18 @@ export function NewRecordSheet({
 
   async function submit() {
     if (!privyWallet) {
-      setMsg("錢包尚未準備");
+      setMsg("Wallet not ready");
       return;
     }
     if (!text && !file) {
-      setMsg("請輸入內容或選擇檔案");
+      setMsg("Enter text or choose a file");
       return;
     }
     setBusy(true);
-    setMsg("檢查餘額…");
+    setMsg("Checking balance…");
     try {
       await assertSufficientBalance(privyWallet.address);
-      setMsg("加密中…");
+      setMsg("Encrypting…");
       const raw = file
         ? new Uint8Array(await file.arrayBuffer())
         : new TextEncoder().encode(text);
@@ -61,13 +61,13 @@ export function NewRecordSheet({
       const iv = randomIv();
       const cipher = await encrypt(raw, key, iv);
 
-      setMsg("上傳備份…");
+      setMsg("Uploading backup…");
       const blobUrl = await uploadCipher(cipher, `${uuidv4()}.bin`);
 
-      setMsg("計算指紋…");
+      setMsg("Computing fingerprint…");
       const hash = await sha256(cipher);
 
-      setMsg("寫入存證…");
+      setMsg("Writing attestation on-chain…");
       // Adaptation: wrap ConnectedStandardSolanaWallet → PrivySolWallet before passing to getProgram
       const wallet = adaptPrivyWallet(privyWallet);
       const program = getProgram(wallet);
@@ -98,7 +98,7 @@ export function NewRecordSheet({
         txSig: sig,
       });
 
-      setMsg("完成！");
+      setMsg("Done!");
       setText("");
       setFile(null);
       setTimeout(() => {
@@ -107,7 +107,7 @@ export function NewRecordSheet({
       }, 800);
     } catch (e) {
       console.error(e);
-      setMsg(`失敗：${(e as Error).message}`);
+      setMsg(`Failed: ${(e as Error).message}`);
     } finally {
       setBusy(false);
     }
@@ -117,20 +117,20 @@ export function NewRecordSheet({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>新增紀錄</DialogTitle>
+          <DialogTitle>New record</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label htmlFor="text">文字描述</Label>
+            <Label htmlFor="text">Description</Label>
             <Input
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="今天看了什麼診、感覺如何…"
+              placeholder="What did you see the doctor for, how do you feel…"
             />
           </div>
           <div>
-            <Label htmlFor="file">或上傳照片/錄音</Label>
+            <Label htmlFor="file">Or upload a photo / voice note</Label>
             <Input
               id="file"
               type="file"
@@ -142,7 +142,7 @@ export function NewRecordSheet({
         </div>
         <DialogFooter>
           <Button onClick={submit} disabled={busy}>
-            儲存
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

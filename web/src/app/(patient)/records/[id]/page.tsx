@@ -32,7 +32,7 @@ export default function RecordDetailPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-4 p-4">
-      <Link href="/records" className="text-sm text-slate-500">← 返回</Link>
+      <Link href="/records" className="text-sm text-slate-500">← Back</Link>
       <Card className="p-4">
         {kind === "text" && <p className="whitespace-pre-wrap">{content}</p>}
         {kind === "photo" && content && <img src={content} alt="" className="w-full rounded" />}
@@ -40,13 +40,13 @@ export default function RecordDetailPage({ params }: { params: Promise<{ id: str
       </Card>
       {meta && (
         <p className="text-xs text-slate-400">
-          存證版本 v{meta.version} · tx{" "}
+          Attested v{meta.version} · tx{" "}
           <a className="underline" href={`https://solscan.io/tx/${meta.txSig}?cluster=devnet`} target="_blank" rel="noreferrer">
             {meta.txSig.slice(0, 8)}…
           </a>
         </p>
       )}
-      <Button className="w-full" onClick={() => { window.location.href = `/records/share?ids=${id}`; }}>分享這筆給醫師</Button>
+      <Button className="w-full" onClick={() => { window.location.href = `/records/share?ids=${id}`; }}>Share this with a doctor</Button>
     </div>
   );
 }

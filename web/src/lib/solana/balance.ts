@@ -6,8 +6,8 @@ const MIN_LAMPORTS = 0.01 * LAMPORTS_PER_SOL;
 export class InsufficientFundsError extends Error {
   constructor(public address: string, public balance: number) {
     super(
-      `錢包餘額不足（${(balance / LAMPORTS_PER_SOL).toFixed(4)} SOL）。` +
-        `請聯繫管理員為地址 ${address} 加值。`,
+      `Insufficient balance (${(balance / LAMPORTS_PER_SOL).toFixed(4)} SOL). ` +
+        `Please ask an administrator to top up address ${address}.`,
     );
     this.name = "InsufficientFundsError";
   }

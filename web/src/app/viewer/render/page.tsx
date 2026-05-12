@@ -12,15 +12,15 @@ function Inner() {
     | { kind: "loading"; msg: string }
     | { kind: "error"; msg: string }
     | { kind: "ok"; records: DecryptedRecord[]; payload: QrPayloadV1 }
-  >({ kind: "loading", msg: "驗證授權…" });
+  >({ kind: "loading", msg: "Verifying grant…" });
 
   useEffect(() => {
     (async () => {
       try {
         const raw = sp.get("p");
-        if (!raw) throw new Error("缺少 QR 內容");
+        if (!raw) throw new Error("Missing QR payload");
         const payload = decodePayload(raw);
-        setState({ kind: "loading", msg: "解密病歷…" });
+        setState({ kind: "loading", msg: "Decrypting records…" });
         const records = await decryptGrant(payload, (m) => setState({ kind: "loading", msg: m }));
         setState({ kind: "ok", records, payload });
       } catch (e) {
@@ -33,7 +33,7 @@ function Inner() {
   if (state.kind === "error") return (
     <main className="flex min-h-dvh items-center justify-center p-6">
       <Card className="max-w-sm space-y-2 border-rose-300 bg-rose-50 p-6 text-rose-700">
-        <h1 className="font-bold">無法顯示</h1>
+        <h1 className="font-bold">Unable to display</h1>
         <p className="text-sm">{state.msg}</p>
       </Card>
     </main>
@@ -41,12 +41,12 @@ function Inner() {
 
   return (
     <main className="space-y-4 p-4">
-      <div className="rounded bg-emerald-50 p-3 text-sm text-emerald-700">✓ 已通過鏈上授權驗證</div>
+      <div className="rounded bg-emerald-50 p-3 text-sm text-emerald-700">✓ Verified on-chain</div>
       {state.records.map((r, i) => (
         <Card key={i} className="space-y-2 p-4">
           <div className="flex justify-between">
             <Badge>{r.kind}</Badge>
-            {r.tampered && <Badge variant="destructive">指紋不符</Badge>}
+            {r.tampered && <Badge variant="destructive">Fingerprint mismatch</Badge>}
           </div>
           {r.kind === "text" && <p className="whitespace-pre-wrap">{r.text}</p>}
           {r.kind === "photo" && r.url && <img src={r.url} alt="" className="w-full rounded" />}

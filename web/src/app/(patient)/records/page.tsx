@@ -20,7 +20,7 @@ function RevokeButton({ grantId, pda }: { grantId: string; pda: string }) {
   const [busy, setBusy] = useState(false);
   async function revoke() {
     if (!privyWallet) return;
-    if (!confirm("確定撤銷？醫師將立即無法查看。")) return;
+    if (!confirm("Revoke this grant? The doctor will lose access immediately.")) return;
     setBusy(true);
     try {
       await assertSufficientBalance(privyWallet.address);
@@ -30,10 +30,10 @@ function RevokeButton({ grantId, pda }: { grantId: string; pda: string }) {
         .accounts({ grant: new PublicKey(pda), patient: new PublicKey(wallet.address) })
         .rpc();
       await markRevoked(grantId);
-    } catch (e) { alert(`失敗：${(e as Error).message}`); }
+    } catch (e) { alert(`Failed: ${(e as Error).message}`); }
     finally { setBusy(false); }
   }
-  return <Button variant="destructive" size="sm" onClick={revoke} disabled={busy}>撤銷</Button>;
+  return <Button variant="destructive" size="sm" onClick={revoke} disabled={busy}>Revoke</Button>;
 }
 
 export default function RecordsPage() {
@@ -44,19 +44,19 @@ export default function RecordsPage() {
   return (
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">病歷</h1>
-        <Link href="/records/share"><Button>分享給醫師</Button></Link>
+        <h1 className="text-2xl font-bold">Records</h1>
+        <Link href="/records/share"><Button>Share with doctor</Button></Link>
       </div>
 
       {activeGrants.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-sm font-medium text-slate-500">授權中</h2>
+          <h2 className="text-sm font-medium text-slate-500">Active grants</h2>
           {activeGrants.map((g) => (
             <Card key={g.grantId} className="flex items-center justify-between p-3">
               <div>
                 <p className="text-sm">{g.granteeLabel}</p>
                 <p className="text-xs text-slate-400">
-                  {g.recordIds.length} 筆 · 到期 {new Date(g.expiresAt * 1000).toLocaleString()}
+                  {g.recordIds.length} record(s) · expires {new Date(g.expiresAt * 1000).toLocaleString()}
                 </p>
               </div>
               <RevokeButton grantId={g.grantId} pda={g.pdaAddress} />
@@ -83,14 +83,14 @@ export default function RecordsPage() {
                     onClick={(e) => e.stopPropagation()}
                     className="mt-2 inline-block text-xs text-emerald-600 hover:underline"
                   >
-                    ✓ 已存證 · 查看鏈上紀錄 ↗
+                    ✓ Attested · view on-chain ↗
                   </a>
                 )}
               </Card>
             </Link>
           </li>
         ))}
-        {records?.length === 0 && <p className="text-center text-sm text-slate-400">還沒有紀錄</p>}
+        {records?.length === 0 && <p className="text-center text-sm text-slate-400">No records yet</p>}
       </ul>
     </div>
   );

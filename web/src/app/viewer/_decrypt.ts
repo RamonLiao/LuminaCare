@@ -32,15 +32,15 @@ export async function decryptGrant(p: QrPayloadV1, onProgress: (msg: string) => 
   const [grantPdaAddr] = grantPda(patient, grantIdBytes);
   const program = readonlyProgram();
 
-  onProgress("查詢授權狀態…");
+  onProgress("Checking grant status…");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const grant = (await (program.account as any).accessGrant.fetch(grantPdaAddr)) as {
     revoked: boolean; expiresAt: { toNumber(): number };
   };
-  if (grant.revoked) throw new Error("此授權已撤銷");
-  if (grant.expiresAt.toNumber() * 1000 < Date.now()) throw new Error("此授權已到期");
+  if (grant.revoked) throw new Error("This grant has been revoked");
+  if (grant.expiresAt.toNumber() * 1000 < Date.now()) throw new Error("This grant has expired");
 
-  onProgress("下載授權包…");
+  onProgress("Downloading bundle…");
   const bundleCipher = await fetch(p.bundleUrl).then((r) => r.arrayBuffer());
   const bundleKey = await importKey(fromBase64(p.bundleKey).buffer as ArrayBuffer);
   const bundlePlain = await decrypt(bundleCipher, bundleKey, fromBase64(p.bundleIv));
@@ -50,7 +50,7 @@ export async function decryptGrant(p: QrPayloadV1, onProgress: (msg: string) => 
 
   const out: DecryptedRecord[] = [];
   for (const r of bundle.records) {
-    onProgress(`解密第 ${out.length + 1} / ${bundle.records.length} 筆…`);
+    onProgress(`Decrypting record ${out.length + 1} / ${bundle.records.length}…`);
     const cipher = await fetch(r.blobUrl).then((res) => res.arrayBuffer());
     const calcHash = await sha256(cipher);
 

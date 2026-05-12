@@ -12,7 +12,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   }, [ready, authenticated, router]);
 
   if (!ready || !authenticated) {
-    return <div className="flex min-h-dvh items-center justify-center text-slate-400">載入中…</div>;
+    return <div className="flex min-h-dvh items-center justify-center text-slate-400">Loading…</div>;
   }
   return (
     <div className="flex min-h-dvh flex-col pb-16">

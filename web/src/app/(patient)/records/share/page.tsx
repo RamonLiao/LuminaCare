@@ -41,13 +41,13 @@ function SharePageInner() {
   const expiresAt = useMemo(() => Math.floor(Date.now() / 1000) + hours * 3600, [hours]);
 
   async function generate() {
-    if (!privyWallet) { setMsg("錢包尚未準備"); return; }
-    if (picked.size === 0) { setMsg("請至少選一筆"); return; }
-    if (!granteeLabel) { setMsg("請填醫師標籤"); return; }
-    setBusy(true); setMsg("檢查餘額…");
+    if (!privyWallet) { setMsg("Wallet not ready"); return; }
+    if (picked.size === 0) { setMsg("Select at least one record"); return; }
+    if (!granteeLabel) { setMsg("Doctor label required"); return; }
+    setBusy(true); setMsg("Checking balance…");
     try {
       await assertSufficientBalance(privyWallet.address);
-      setMsg("打包中…");
+      setMsg("Packaging…");
       const selected = records.filter((r) => picked.has(r.recordId));
       const bundleObj = {
         records: selected.map((r) => ({
@@ -65,16 +65,16 @@ function SharePageInner() {
       const bundleIv = randomIv();
       const bundleCipher = await encrypt(bundleJson, bundleKey, bundleIv);
 
-      setMsg("上傳授權包…");
+      setMsg("Uploading grant bundle…");
       const bundleUrl = await uploadCipher(bundleCipher, `grant-${uuidv4()}.bin`);
 
       const grantIdBytes = crypto.getRandomValues(new Uint8Array(16));
       const grantIdHex = Array.from(grantIdBytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 
-      setMsg("計算授權指紋…");
+      setMsg("Computing grant fingerprint…");
       const labelHash = await sha256(new TextEncoder().encode(`${granteeLabel}:${grantIdHex}`));
 
-      setMsg("寫入授權…");
+      setMsg("Writing grant on-chain…");
       const wallet = adaptPrivyWallet(privyWallet);
       const program = getProgram(wallet);
       const patient = new PublicKey(wallet.address);
@@ -123,7 +123,7 @@ function SharePageInner() {
       setMsg(null);
     } catch (e) {
       console.error(e);
-      setMsg(`失敗：${(e as Error).message}`);
+      setMsg(`Failed: ${(e as Error).message}`);
     } finally {
       setBusy(false);
     }
@@ -132,26 +132,26 @@ function SharePageInner() {
   if (qr) {
     return (
       <div className="flex flex-col items-center gap-4 p-6">
-        <h1 className="text-xl font-bold">請給醫師掃描</h1>
+        <h1 className="text-xl font-bold">Show this to the doctor</h1>
         <img src={qr} alt="QR" className="rounded border" />
-        <p className="text-xs text-slate-500">{hours} 小時後自動失效。如需提前停止，到病歷頁撤銷。</p>
-        <Button onClick={() => router.push("/records")}>完成</Button>
+        <p className="text-xs text-slate-500">Expires in {hours} hour(s). To stop sooner, revoke from the Records page.</p>
+        <Button onClick={() => router.push("/records")}>Done</Button>
       </div>
     );
   }
 
   return (
     <div className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold">分享給醫師</h1>
+      <h1 className="text-2xl font-bold">Share with doctor</h1>
       <div>
-        <Label htmlFor="who">醫師 / 院所標籤</Label>
-        <Input id="who" value={granteeLabel} onChange={(e) => setGranteeLabel(e.target.value)} placeholder="陳醫師 / 台大內科" />
+        <Label htmlFor="who">Doctor / clinic label</Label>
+        <Input id="who" value={granteeLabel} onChange={(e) => setGranteeLabel(e.target.value)} placeholder="Dr Smith / St Mary's Cardiology" />
       </div>
       <div>
-        <Label htmlFor="hours">有效時數</Label>
+        <Label htmlFor="hours">Valid for (hours)</Label>
         <Input id="hours" type="number" min={1} max={168} value={hours} onChange={(e) => setHours(Number(e.target.value))} />
       </div>
-      <p className="text-sm text-slate-500">選擇要分享的紀錄：</p>
+      <p className="text-sm text-slate-500">Select records to share:</p>
       <ul className="space-y-2">
         {records.map((r) => (
           <li key={r.recordId}>
@@ -173,14 +173,14 @@ function SharePageInner() {
         ))}
       </ul>
       {msg && <p className="text-sm text-rose-600">{msg}</p>}
-      <Button className="w-full" onClick={generate} disabled={busy}>產生 QR</Button>
+      <Button className="w-full" onClick={generate} disabled={busy}>Generate QR</Button>
     </div>
   );
 }
 
 export default function SharePage() {
   return (
-    <Suspense fallback={<div className="p-4">載入中…</div>}>
+    <Suspense fallback={<div className="p-4">Loading…</div>}>
       <SharePageInner />
     </Suspense>
   );
