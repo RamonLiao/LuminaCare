@@ -2,6 +2,12 @@
 
 **Your medical history, in your pocket — verifiable on Solana, readable by any doctor in three seconds.**
 
+## Pitch
+
+1. **Patients own their records, not hospitals.** Encrypted on the patient's device, attested on Solana, shared by QR — no app, no wallet, no login on the doctor's side.
+2. **Revocation is the access-control primitive, not key custody.** One tap flips the on-chain grant; the same QR turns red instantly, on every device, forever.
+3. **Built for the people hospitals ignore.** Family carers of chronic patients are the wedge — pharmacies and long-term-care centres are the channel, not hospital BD.
+
 Patients carry their own encrypted records. When they visit a doctor, they show a QR code. The doctor scans it on any browser — no app, no wallet, no login — and sees the records, plus a green tick proving the patient is the rightful owner. Revoke access in one tap and the same QR turns red instantly.
 
 The chain stores three things: a tamper-proof fingerprint of each record, the grant, and the revocation. The records themselves never leave the patient's device unencrypted.
