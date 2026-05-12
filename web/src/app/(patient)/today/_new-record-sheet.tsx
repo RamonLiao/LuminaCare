@@ -15,51 +15,14 @@ import { Label } from "@/components/ui/label";
 // It returns { wallets: ConnectedStandardSolanaWallet[], ready: boolean }.
 import { useWallets } from "@privy-io/react-auth/solana";
 import { v4 as uuidv4 } from "uuid";
-import {
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  VersionedTransaction,
-} from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { generateAesKey, randomIv, encrypt, exportKey } from "@/lib/crypto/aes";
 import { sha256 } from "@/lib/crypto/hash";
 import { uploadCipher } from "@/lib/blob/upload";
-import { getProgram, recordPda, type PrivySolWallet } from "@/lib/anchor/client";
+import { getProgram, recordPda } from "@/lib/anchor/client";
+import { adaptPrivyWallet } from "@/lib/anchor/wallet-adapter";
 import { addRecord, nextVersion } from "@/lib/storage/records";
 import type { ConnectedStandardSolanaWallet } from "@privy-io/js-sdk-core";
-
-/**
- * Adaptation: ConnectedStandardSolanaWallet.signTransaction takes
- * { transaction: Uint8Array } (Solana Wallet Standard) but Anchor's Wallet interface
- * expects (tx: Transaction | VersionedTransaction) => Promise<T>.
- *
- * We wrap by: serialize → call privy → deserialize the signed bytes back to the same type.
- */
-function adaptPrivyWallet(w: ConnectedStandardSolanaWallet): PrivySolWallet {
-  async function signTransaction<T extends Transaction | VersionedTransaction>(
-    tx: T,
-  ): Promise<T> {
-    const serialized = tx.serialize({ requireAllSignatures: false } as Parameters<typeof tx.serialize>[0]);
-    const output = await w.signTransaction({ transaction: serialized });
-    const signed = output.signedTransaction;
-    if (tx instanceof VersionedTransaction) {
-      return VersionedTransaction.deserialize(signed) as T;
-    }
-    return Transaction.from(signed) as T;
-  }
-
-  async function signAllTransactions<T extends Transaction | VersionedTransaction>(
-    txs: T[],
-  ): Promise<T[]> {
-    return Promise.all(txs.map((tx) => signTransaction(tx)));
-  }
-
-  return {
-    address: w.address,
-    signTransaction,
-    signAllTransactions,
-  };
-}
 
 export function NewRecordSheet({
   open,
