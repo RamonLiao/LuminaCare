@@ -83,7 +83,7 @@ function SharePageInner() {
       await program.methods
         .issueGrant(
           Array.from(grantIdBytes),
-          selected.map((r) => r.recordId),
+          selected.map((r) => new PublicKey(r.pdaAddress)),
           Array.from(labelHash),
           new BN(expiresAt),
         )
