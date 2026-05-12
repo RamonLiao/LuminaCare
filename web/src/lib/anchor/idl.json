@@ -1,0 +1,338 @@
+{
+  "address": "EtT9N7bf5YgEqHDBDkSTSGusZFEbKWiPdNNTkg2Nx8dA",
+  "metadata": {
+    "name": "portable_health",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "anchor_record",
+      "discriminator": [
+        49,
+        213,
+        61,
+        89,
+        178,
+        123,
+        20,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "patient",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "patient"
+              },
+              {
+                "kind": "arg",
+                "path": "version"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "content_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "version",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "issue_grant",
+      "discriminator": [
+        65,
+        190,
+        99,
+        75,
+        71,
+        70,
+        20,
+        107
+      ],
+      "accounts": [
+        {
+          "name": "patient",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "grant",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  114,
+                  97,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "patient"
+              },
+              {
+                "kind": "arg",
+                "path": "grant_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "grant_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "record_ids",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "grantee_label_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "expires_at",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "revoke_grant",
+      "discriminator": [
+        134,
+        180,
+        57,
+        39,
+        152,
+        7,
+        154,
+        98
+      ],
+      "accounts": [
+        {
+          "name": "patient",
+          "signer": true,
+          "relations": [
+            "grant"
+          ]
+        },
+        {
+          "name": "grant",
+          "writable": true
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AccessGrant",
+      "discriminator": [
+        167,
+        55,
+        184,
+        237,
+        74,
+        242,
+        0,
+        109
+      ]
+    },
+    {
+      "name": "HealthRecord",
+      "discriminator": [
+        75,
+        125,
+        187,
+        175,
+        128,
+        179,
+        45,
+        90
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "GrantExpired",
+      "msg": "Grant has expired"
+    },
+    {
+      "code": 6001,
+      "name": "GrantRevoked",
+      "msg": "Grant has been revoked"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidExpiration",
+      "msg": "Invalid expiration timestamp"
+    },
+    {
+      "code": 6004,
+      "name": "TooManyRecords",
+      "msg": "Too many records in grant"
+    }
+  ],
+  "types": [
+    {
+      "name": "AccessGrant",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "patient",
+            "type": "pubkey"
+          },
+          {
+            "name": "grant_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "record_ids",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "grantee_label_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issued_at",
+            "type": "i64"
+          },
+          {
+            "name": "expires_at",
+            "type": "i64"
+          },
+          {
+            "name": "revoked",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HealthRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "patient",
+            "type": "pubkey"
+          },
+          {
+            "name": "content_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "version",
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "GRANT_SEED",
+      "type": "bytes",
+      "value": "[103, 114, 97, 110, 116]"
+    },
+    {
+      "name": "RECORD_SEED",
+      "type": "bytes",
+      "value": "[114, 101, 99, 111, 114, 100]"
+    }
+  ]
+}
