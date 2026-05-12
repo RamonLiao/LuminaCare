@@ -26,8 +26,7 @@ function RevokeButton({ grantId, pda }: { grantId: string; pda: string }) {
       await assertSufficientBalance(privyWallet.address);
       const wallet = adaptPrivyWallet(privyWallet);
       const program = getProgram(wallet);
-      const grantIdBytes = new Uint8Array(grantId.match(/.{2}/g)!.map((h) => parseInt(h, 16)));
-      await program.methods.revokeGrant(Array.from(grantIdBytes))
+      await program.methods.revokeGrant()
         .accounts({ grant: new PublicKey(pda), patient: new PublicKey(wallet.address) })
         .rpc();
       await markRevoked(grantId);
